@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ai-quiz-server
+    env: python
+    buildCommand: pip install -r requirements_llm.txt
+    startCommand: python quiz_server_production.py
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.0
