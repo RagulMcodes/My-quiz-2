@@ -14,7 +14,7 @@ class QuizClient:
     async def connect(self):
         """Connect to the WebSocket server"""
         try:
-            self.websocket = await websockets.connect("ws://localhost:8765")
+            await websockets.connect("wss://my-quiz-2-o.onrender.com")
             self.connected = True
             print("✅ Connected to AI-powered quiz server!")
             return True
