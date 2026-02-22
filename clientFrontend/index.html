@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #2a2a40;
+    --accent: #f0e040;
+    --accent2: #40e0f0;
+    --accent3: #f040a0;
+    --text: #e8e8f0;
+    --muted: #6060a0;
+    --correct: #40f080;
+    --wrong: #f04060;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 16px 48px;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(240,224,64,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(64,224,240,0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .logo {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .status-dot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.3s;
+  }
+  .dot.live { background: var(--correct); box-shadow: 0 0 8px var(--correct); animation: pulse 1.5s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  #app {
+    width: 100%;
+    max-width: 680px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Screens ── */
+  .screen { display: none; animation: fadeUp 0.35s ease; }
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .btn:hover { border-color: var(--text); background: rgba(255,255,255,0.04); }
+
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0a0a0f;
+  }
+  .btn.primary:hover { background: #f8ec60; border-color: #f8ec60; }
+
+  .btn.secondary {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+  .btn.secondary:hover { background: rgba(64,224,240,0.08); }
+
+  /* ── Inputs ── */
+  .field { margin-bottom: 20px; }
+
+  label {
+    display: block;
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  input, select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+  }
+
+  input:focus, select:focus { border-color: var(--accent); }
+  select option { background: var(--surface); }
+
+  input[type=range] {
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    accent-color: var(--accent);
+  }
+
+  .range-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .range-val {
+    font-family: 'Syne Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 32px;
+    text-align: right;
+  }
+
+  /* ── Choice buttons (home screen) ── */
+  .choice-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .choice-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+  }
+
+  .choice-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .choice-btn .icon { font-size: 1.8rem; margin-bottom: 12px; }
+  .choice-btn .label { font-weight: 700; font-size: 1rem; }
+  .choice-btn .desc { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+  /* ── Lobby ── */
+  .room-id-display {
+    font-family: 'Syne Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    padding: 20px;
+    text-align: center;
+    border: 1px dashed var(--accent);
+    border-radius: 4px;
+    margin-bottom: 24px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .room-id-display:hover { background: rgba(240,224,64,0.06); }
+  .room-id-display small { display: block; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); margin-top: 6px; }
+
+  .player-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .player-tag {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 4px 14px;
+    font-size: 0.82rem;
+    font-family: 'Syne Mono', monospace;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .player-tag.me { border-color: var(--accent2); color: var(--accent2); }
+
+  .progress-bar-wrap {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    height: 6px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .meta-chip {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 99px;
+  }
+
+  .meta-chip span { color: var(--text); }
+
+  /* ── Question ── */
+  .q-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .q-counter {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .timer {
+    font-family: 'Syne Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    transition: color 0.3s;
+  }
+
+  .timer.urgent { color: var(--wrong); animation: shake 0.3s infinite; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+  }
+
+  .question-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 28px;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .option-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .option-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(240,224,64,0.06); transform: translateY(-1px); }
+  .option-btn:disabled { cursor: default; }
+
+  .option-btn .key {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .option-btn.selected { border-color: var(--accent2); background: rgba(64,224,240,0.08); }
+  .option-btn.correct  { border-color: var(--correct); background: rgba(64,240,128,0.1); }
+  .option-btn.wrong    { border-color: var(--wrong); background: rgba(240,64,96,0.1); }
+
+  /* ── Scores ── */
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp 0.3s ease;
+  }
+
+  .score-row:last-child { border-bottom: none; }
+
+  .rank { font-family: 'Syne Mono', monospace; font-size: 0.8rem; color: var(--muted); width: 24px; }
+  .score-name { flex: 1; font-weight: 700; }
+  .score-pts {
+    font-family: 'Syne Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ── Toast / Log ── */
+  #log {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+    max-width: 320px;
+  }
+
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 3px;
+    padding: 10px 16px;
+    font-size: 0.82rem;
+    animation: slideIn 0.25s ease;
+    transition: opacity 0.3s;
+  }
+
+  .toast.info { border-left-color: var(--accent2); }
+  .toast.error { border-left-color: var(--wrong); }
+  .toast.success { border-left-color: var(--correct); }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── Generating overlay ── */
+  .generating {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .spinner {
+    width: 48px; height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .generating p { color: var(--muted); font-size: 0.9rem; }
+
+  /* ── Results banner ── */
+  .result-banner {
+    padding: 16px 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+  }
+
+  .result-banner.correct { background: rgba(64,240,128,0.1); border: 1px solid var(--correct); color: var(--correct); }
+  .result-banner.wrong   { background: rgba(240,64,96,0.1); border: 1px solid var(--wrong); color: var(--wrong); }
+
+  .fastest-list { list-style: none; }
+  .fastest-list li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .fastest-list li:last-child { border: none; }
+
+  /* ── Final screen ── */
+  .podium { display: flex; align-items: flex-end; justify-content: center; gap: 12px; margin: 32px 0; }
+  .podium-slot { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .podium-bar {
+    width: 80px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px 3px 0 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 12px;
+    font-family: 'Syne Mono', monospace;
+    font-size: 1.5rem;
+  }
+  .podium-name { font-size: 0.78rem; font-weight: 700; text-align: center; max-width: 80px; word-break: break-word; }
+  .podium-pts { font-family: 'Syne Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+
+  .final-list { list-style: none; }
+  .final-list li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; }
+  .final-list li:last-child { border: none; }
+  .final-rank { font-family: 'Syne Mono', monospace; font-size: 0.8rem; color: var(--muted); width: 28px; }
+  .final-name { flex: 1; font-weight: 700; }
+  .final-pts  { font-family: 'Syne Mono', monospace; font-size: 0.9rem; color: var(--accent); }
+
+  @media (max-width: 480px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .choice-grid  { grid-template-columns: 1fr; }
+    .podium-bar   { width: 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡ QuizAI</div>
+  <div class="status-dot">
+    <div class="dot" id="connDot"></div>
+    <span id="connLabel">Disconnected</span>
+  </div>
+</header>
+
+<div id="app">
+
+  <!-- HOME -->
+  <div class="screen active" id="screenHome">
+    <div class="card">
+      <h1>AI <br>Quiz</h1>
+      <p class="subtitle">Multiplayer trivia powered by AI.<br>Create a room or join one to start.</p>
+      <div class="choice-grid">
+        <button class="choice-btn" onclick="showCreate()">
+          <div class="icon">🎮</div>
+          <div class="label">Create Room</div>
+          <div class="desc">Host a new game session</div>
+        </button>
+        <button class="choice-btn" onclick="showJoin()">
+          <div class="icon">🚀</div>
+          <div class="label">Join Room</div>
+          <div class="desc">Enter an existing room ID</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE -->
+  <div class="screen" id="screenCreate">
+    <div class="card">
+      <h2>Create Room</h2>
+      <div class="field">
+        <label>Username</label>
+        <input id="createUsername" type="text" placeholder="Your display name" maxlength="20" />
+      </div>
+      <div class="field">
+        <label>Players — <span id="playersVal">4</span></label>
+        <div class="range-row">
+          <input type="range" id="playersRange" min="2" max="10" value="4" oninput="document.getElementById('playersVal').textContent=this.value" />
+          <div class="range-val" id="playersValB">4</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Questions — <span id="questionsVal">10</span></label>
+        <div class="range-row">
+          <input type="range" id="questionsRange" min="5" max="20" value="10" oninput="document.getElementById('questionsVal').textContent=this.value;document.getElementById('questionsValB').textContent=this.value" />
+          <div class="range-val" id="questionsValB">10</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Topic</label>
+        <select id="topicSelect">
+          <option value="general knowledge">General Knowledge</option>
+          <option value="science and technology">Science &amp; Technology</option>
+          <option value="history and geography">History &amp; Geography</option>
+          <option value="sports and entertainment">Sports &amp; Entertainment</option>
+          <option value="custom">Custom…</option>
+        </select>
+      </div>
+      <div class="field" id="customTopicField" style="display:none">
+        <label>Custom Topic</label>
+        <input id="customTopic" type="text" placeholder="e.g. 90s hip hop, ancient Rome…" />
+      </div>
+      <button class="btn primary" onclick="createRoom()">Create Room</button>
+      <button class="btn" onclick="showScreen('screenHome')">← Back</button>
+    </div>
+  </div>
+
+  <!-- JOIN -->
+  <div class="screen" id="screenJoin">
+    <div class="card">
+      <h2>Join Room</h2>
+      <div class="field">
+        <label>Username</label>
+        <input id="joinUsername" type="text" placeholder="Your display name" maxlength="20" />
+      </div>
+      <div class="field">
+        <label>Room ID</label>
+        <input id="joinRoomId" type="text" placeholder="e.g. AB12" maxlength="8"
+          oninput="this.value=this.value.toUpperCase()" />
+      </div>
+      <button class="btn primary" onclick="joinRoom()">Join Room</button>
+      <button class="btn" onclick="showScreen('screenHome')">← Back</button>
+    </div>
+  </div>
+
+  <!-- LOBBY -->
+  <div class="screen" id="screenLobby">
+    <div class="card">
+      <h2>Lobby</h2>
+      <div class="room-id-display" id="lobbyRoomId" onclick="copyRoomId()" title="Click to copy">
+        ——
+        <small>ROOM ID — CLICK TO COPY</small>
+      </div>
+      <div class="meta-row">
+        <div class="meta-chip">Topic: <span id="lobbyTopic">—</span></div>
+        <div class="meta-chip">Questions: <span id="lobbyQuestions">—</span></div>
+      </div>
+      <label>Players</label>
+      <div class="progress-bar-wrap" style="margin-top:8px">
+        <div class="progress-bar" id="lobbyProgress" style="width:0%"></div>
+      </div>
+      <div class="player-list" id="lobbyPlayers"></div>
+      <div class="generating" id="lobbyGenerating" style="display:none">
+        <div class="spinner"></div>
+        <p id="lobbyGenMsg">Generating questions…</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION -->
+  <div class="screen" id="screenQuestion">
+    <div class="card">
+      <div class="q-header">
+        <div class="q-counter">Question <span id="qNum">1</span> of <span id="qTotal">10</span></div>
+        <div class="timer" id="timer">—</div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="qProgress" style="width:100%"></div>
+      </div>
+      <div class="question-text" id="questionText">…</div>
+      <div class="options-grid" id="optionsGrid"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS (between questions) -->
+  <div class="screen" id="screenResults">
+    <div class="card">
+      <h2>Round Results</h2>
+      <div id="resultBanner"></div>
+      <div id="fastestSection" style="display:none">
+        <label style="display:block;margin-bottom:12px">Fastest Correct</label>
+        <ul class="fastest-list" id="fastestList"></ul>
+      </div>
+      <label style="display:block;margin:24px 0 12px">Scores</label>
+      <div id="resultScores"></div>
+      <p style="margin-top:20px;color:var(--muted);font-size:0.82rem;text-align:center" id="nextCountdown"></p>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="screen" id="screenFinal">
+    <div class="card">
+      <h2>Game Over</h2>
+      <div id="podium" class="podium"></div>
+      <label style="display:block;margin-bottom:12px">Full Rankings</label>
+      <ul class="final-list" id="finalList"></ul>
+      <button class="btn primary" style="margin-top:24px" onclick="showScreen('screenHome');location.reload()">Play Again</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="log"></div>
+
+<script>
+// ── State ──
+let ws = null;
+let roomId = null;
+let username = null;
+let myAnswer = null;
+let timerInterval = null;
+let timerSeconds = 0;
+
+// ── Routing ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showCreate() { showScreen('screenCreate'); }
+function showJoin()   { showScreen('screenJoin'); }
+
+// Custom topic toggle
+document.getElementById('topicSelect').addEventListener('change', function() {
+  document.getElementById('customTopicField').style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+// Sync both range displays
+document.getElementById('playersRange').addEventListener('input', function() {
+  document.getElementById('playersValB').textContent = this.value;
+});
+
+// ── WebSocket ──
+function connect(callback) {
+  ws = new WebSocket("wss://my-quiz-2-mcg1.onrender.com");
+
+  ws.addEventListener('open', () => {
+    setConn(true);
+    callback();
+  });
+
+  ws.addEventListener('close', () => {
+    setConn(false);
+    toast('Connection lost', 'error');
+  });
+
+  ws.addEventListener('error', () => {
+    setConn(false);
+    toast('Could not connect to server', 'error');
+  });
+
+  ws.addEventListener('message', (e) => {
+    let msg;
+    try { msg = JSON.parse(e.data); } catch { return; }
+    handleMessage(msg);
+  });
+}
+
+function send(obj) {
+  if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
+}
+
+function setConn(alive) {
+  const dot = document.getElementById('connDot');
+  const label = document.getElementById('connLabel');
+  dot.className = 'dot' + (alive ? ' live' : '');
+  label.textContent = alive ? 'Connected' : 'Disconnected';
+}
+
+// ── Actions ──
+function createRoom() {
+  const uname = document.getElementById('createUsername').value.trim() || `Player_${Date.now().toString().slice(-4)}`;
+  const players = +document.getElementById('playersRange').value;
+  const questions = +document.getElementById('questionsRange').value;
+  const topicSel = document.getElementById('topicSelect').value;
+  const topic = topicSel === 'custom'
+    ? (document.getElementById('customTopic').value.trim() || 'general knowledge')
+    : topicSel;
+
+  username = uname;
+  connect(() => {
+    send({ action: 'create_room', username, max_participants: players, num_questions: questions, topic });
+  });
+}
+
+function joinRoom() {
+  const uname = document.getElementById('joinUsername').value.trim() || `Player_${Date.now().toString().slice(-4)}`;
+  const rid = document.getElementById('joinRoomId').value.trim().toUpperCase();
+  if (!rid) { toast('Enter a room ID', 'error'); return; }
+
+  username = uname;
+  connect(() => {
+    send({ action: 'join_room', username, room_id: rid });
+  });
+}
+
+function copyRoomId() {
+  if (!roomId) return;
+  navigator.clipboard.writeText(roomId).then(() => toast(`Room ID "${roomId}" copied!`, 'success'));
+}
+
+function submitAnswer(answer) {
+  if (myAnswer) return;
+  myAnswer = answer;
+  send({ action: 'submit_answer', room_id: roomId, answer });
+
+  // Highlight selected
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.disabled = true;
+    if (btn.dataset.key === answer) btn.classList.add('selected');
+  });
+}
+
+// ── Message Handler ──
+function handleMessage(msg) {
+  switch (msg.type) {
+
+    case 'room_created':
+      roomId = msg.room_id;
+      showLobby(msg);
+      toast(`Room ${roomId} created!`, 'success');
+      break;
+
+    case 'room_joined':
+      roomId = msg.room_id;
+      showLobby(msg);
+      toast(`Joined room ${roomId}`, 'success');
+      break;
+
+    case 'participant_joined':
+      toast(`${msg.username} joined`, 'info');
+      updateLobbyPlayers(msg.participants, msg.current_participants, msg.max_participants);
+      break;
+
+    case 'participant_disconnected':
+      toast(msg.message, 'info');
+      break;
+
+    case 'generating_questions':
+      document.getElementById('lobbyGenerating').style.display = 'block';
+      document.getElementById('lobbyGenMsg').textContent = msg.message;
+      break;
+
+    case 'questions_generated':
+      document.getElementById('lobbyGenMsg').textContent = msg.message;
+      toast(msg.message, 'success');
+      break;
+
+    case 'game_starting':
+      toast(msg.message, 'info');
+      break;
+
+    case 'countdown':
+      toast(`Starting in ${msg.seconds}…`, 'info');
+      break;
+
+    case 'question':
+      showQuestion(msg);
+      break;
+
+    case 'question_results':
+      showQuestionResults(msg);
+      break;
+
+    case 'game_ended':
+      showFinal(msg);
+      break;
+
+    case 'error':
+      toast(`Error: ${msg.message}`, 'error');
+      break;
+  }
+}
+
+// ── Lobby ──
+function showLobby(msg) {
+  showScreen('screenLobby');
+  document.getElementById('lobbyRoomId').childNodes[0].textContent = msg.room_id + ' ';
+  document.getElementById('lobbyTopic').textContent = msg.topic || 'general knowledge';
+  document.getElementById('lobbyQuestions').textContent = msg.num_questions || 10;
+  updateLobbyPlayers(null, msg.current_participants, msg.max_participants);
+  if (msg.username) addPlayerTag(msg.username, true);
+}
+
+function updateLobbyPlayers(list, current, max) {
+  const pct = Math.round((current / max) * 100);
+  document.getElementById('lobbyProgress').style.width = pct + '%';
+  if (list) {
+    const container = document.getElementById('lobbyPlayers');
+    container.innerHTML = '';
+    list.forEach(name => addPlayerTag(name, name === username));
+  }
+}
+
+function addPlayerTag(name, isMe) {
+  const container = document.getElementById('lobbyPlayers');
+  // avoid duplicates
+  if ([...container.querySelectorAll('.player-tag')].some(el => el.textContent.replace('(you)','').trim() === name)) return;
+  const tag = document.createElement('div');
+  tag.className = 'player-tag' + (isMe ? ' me' : '');
+  tag.textContent = isMe ? `${name} (you)` : name;
+  container.appendChild(tag);
+}
+
+// ── Question ──
+function showQuestion(data) {
+  showScreen('screenQuestion');
+  myAnswer = null;
+
+  document.getElementById('qNum').textContent = data.question_number;
+  document.getElementById('qTotal').textContent = data.total_questions;
+  document.getElementById('questionText').textContent = data.question;
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+
+  const keys = ['A','B','C','D'];
+  data.options.forEach((opt, i) => {
+    const key = keys[i];
+    const text = opt.replace(/^[A-D][).]\s*/, '');
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.dataset.key = key;
+    btn.innerHTML = `<span class="key">${key}</span> <span>${text}</span>`;
+    btn.addEventListener('click', () => submitAnswer(key));
+    grid.appendChild(btn);
+  });
+
+  // Keyboard shortcut
+  const handler = (e) => {
+    if (['a','b','c','d'].includes(e.key.toLowerCase())) {
+      submitAnswer(e.key.toUpperCase());
+      document.removeEventListener('keydown', handler);
+    }
+  };
+  document.addEventListener('keydown', handler);
+
+  // Timer
+  startTimer(data.time_limit);
+}
+
+function startTimer(seconds) {
+  clearInterval(timerInterval);
+  timerSeconds = seconds;
+  const timerEl = document.getElementById('timer');
+  const progressEl = document.getElementById('qProgress');
+
+  function tick() {
+    timerEl.textContent = timerSeconds + 's';
+    timerEl.className = 'timer' + (timerSeconds <= 5 ? ' urgent' : '');
+    progressEl.style.width = ((timerSeconds / seconds) * 100) + '%';
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerEl.textContent = '0s';
+    }
+    timerSeconds--;
+  }
+
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
+
+// ── Question Results ──
+function showQuestionResults(msg) {
+  clearInterval(timerInterval);
+  showScreen('screenResults');
+
+  // Did I get it right?
+  const banner = document.getElementById('resultBanner');
+  const correctKey = msg.correct_answer.charAt(0);
+  if (myAnswer) {
+    const correct = myAnswer === correctKey;
+    banner.className = 'result-banner ' + (correct ? 'correct' : 'wrong');
+    banner.textContent = correct
+      ? `✓ Correct! Answer: ${msg.correct_answer}`
+      : `✗ Wrong. Correct: ${msg.correct_answer}`;
+  } else {
+    banner.className = 'result-banner wrong';
+    banner.textContent = `Time's up! Correct: ${msg.correct_answer}`;
+  }
+
+  // Fastest
+  const fastestSection = document.getElementById('fastestSection');
+  const fastestList = document.getElementById('fastestList');
+  fastestList.innerHTML = '';
+  if (msg.rankings && msg.rankings.length) {
+    fastestSection.style.display = 'block';
+    const medals = ['🥇','🥈','🥉'];
+    const pts = [3,2,1];
+    msg.rankings.forEach(([,uname], i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${medals[i] || ''}</span> <span style="flex:1">${uname}</span> <span style="color:var(--accent);font-family:'Syne Mono',monospace">+${pts[i]||1} pts</span>`;
+      fastestList.appendChild(li);
+    });
+  } else {
+    fastestSection.style.display = 'none';
+  }
+
+  // Scores
+  renderScores(msg.scores, 'resultScores');
+
+  // Countdown
+  let t = 3;
+  const cdEl = document.getElementById('nextCountdown');
+  cdEl.textContent = `Next question in ${t}…`;
+  const cd = setInterval(() => {
+    t--;
+    if (t > 0) cdEl.textContent = `Next question in ${t}…`;
+    else { cdEl.textContent = ''; clearInterval(cd); }
+  }, 1000);
+}
+
+function renderScores(scores, containerId) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  sorted.forEach(([uid, score], i) => {
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    const medals = ['🥇','🥈','🥉'];
+    row.innerHTML = `<span class="rank">${medals[i] || (i+1)}</span><span class="score-name">${uid}</span><span class="score-pts">${score}</span>`;
+    el.appendChild(row);
+  });
+}
+
+// ── Final ──
+function showFinal(msg) {
+  showScreen('screenFinal');
+
+  const scores = msg.final_scores; // [[name, pts], ...]
+  const podium = document.getElementById('podium');
+  podium.innerHTML = '';
+
+  const order = [1, 0, 2]; // silver, gold, bronze display order
+  const heights = [80, 120, 60];
+  const medals = ['🥇','🥈','🥉'];
+  const labels = ['1st','2nd','3rd'];
+
+  order.forEach((idx, col) => {
+    if (!scores[idx]) return;
+    const [name, pts] = scores[idx];
+    const slot = document.createElement('div');
+    slot.className = 'podium-slot';
+    slot.innerHTML = `
+      <div class="podium-name">${name}</div>
+      <div class="podium-pts">${pts} pts</div>
+      <div class="podium-bar" style="height:${heights[col]}px">${medals[idx]}</div>
+      <div style="font-size:0.75rem;color:var(--muted);font-family:'Syne Mono',monospace">${labels[idx]}</div>
+    `;
+    podium.appendChild(slot);
+  });
+
+  const list = document.getElementById('finalList');
+  list.innerHTML = '';
+  scores.forEach(([name, pts], i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="final-rank">${i+1}</span><span class="final-name">${name}</span><span class="final-pts">${pts} pts</span>`;
+    list.appendChild(li);
+  });
+
+  if (msg.winner) toast(`🎉 ${msg.winner} wins!`, 'success');
+}
+
+// ── Toast ──
+function toast(text, type = '') {
+  const log = document.getElementById('log');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = text;
+  log.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 300);
+  }, 3200);
+}
+</script>
+</body>
+</html>
