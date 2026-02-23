@@ -693,6 +693,14 @@ let myAnswer = null;
 let timerInterval = null;
 let timerSeconds = 0;
 
+// Map server user_id -> username (best-effort, learned from rankings payloads)
+const nameByUserId = new Map();
+
+function displayNameForUserId(userId) {
+  if (!userId) return '';
+  return nameByUserId.get(userId) || `Player ${String(userId).slice(0, 6)}`;
+}
+
 // ── Routing ──
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -969,7 +977,10 @@ function showQuestionResults(msg) {
     fastestSection.style.display = 'block';
     const medals = ['🥇','🥈','🥉'];
     const pts = [3,2,1];
-    msg.rankings.forEach(([,uname], i) => {
+
+    msg.rankings.forEach(([uid, uname], i) => {
+      if (uid && uname) nameByUserId.set(uid, uname);
+
       const li = document.createElement('li');
       li.innerHTML = `<span>${medals[i] || ''}</span> <span style="flex:1">${uname}</span> <span style="color:var(--accent);font-family:'Syne Mono',monospace">+${pts[i]||1} pts</span>`;
       fastestList.appendChild(li);
@@ -1000,7 +1011,7 @@ function renderScores(scores, containerId) {
     const row = document.createElement('div');
     row.className = 'score-row';
     const medals = ['🥇','🥈','🥉'];
-    row.innerHTML = `<span class="rank">${medals[i] || (i+1)}</span><span class="score-name">${uid}</span><span class="score-pts">${score}</span>`;
+    row.innerHTML = `<span class="rank">${medals[i] || (i+1)}</span><span class="score-name">${displayNameForUserId(uid)}</span><span class="score-pts">${score}</span>`;
     el.appendChild(row);
   });
 }

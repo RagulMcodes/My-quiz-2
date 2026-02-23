@@ -152,28 +152,28 @@ class QuizRoom:
             self.answers_received[user_id] = (answer, timestamp)
             return True
         return False
-    
+
     def calculate_scores_for_question(self):
         """Calculate scores for the current question based on answer timing"""
         if not self.questions or self.current_question_index >= len(self.questions):
             return {"correct_answer": "", "rankings": [], "scores": self.scores.copy()}
-            
+
         correct_answer = self.questions[self.current_question_index]["correct_answer"]
-        
+
         # Sort by timestamp to determine who answered first
         correct_answers = []
         for user_id, (answer, timestamp) in self.answers_received.items():
             if answer.upper() == correct_answer.upper():
-                correct_answers.append((user_id, timestamp))
+                correct_answers.append((user_id, self.participants[user_id]["username"], timestamp))
             else:
-                # Wrong answer: -1 mark
+                # Wrong answer: -1 mark  
                 self.scores[user_id] -= 1
-        
+
         # Sort correct answers by timestamp
-        correct_answers.sort(key=lambda x: x[1])
-        
+        correct_answers.sort(key=lambda x: x[2])
+
         # Award points: 1st=3, 2nd=2, 3rd=1, rest=0
-        for rank, (user_id, _) in enumerate(correct_answers):
+        for rank, (user_id, username, _) in enumerate(correct_answers):
             if rank == 0:
                 self.scores[user_id] += 3
             elif rank == 1:
@@ -181,7 +181,7 @@ class QuizRoom:
             elif rank == 2:
                 self.scores[user_id] += 1
             # else: 0 points (no change)
-        
+
         return {
             "correct_answer": correct_answer,
             "rankings": [(user_id, self.participants[user_id]["username"], timestamp) 
@@ -374,16 +374,16 @@ async def start_question(room_id: str):
     
     # Calculate scores
     results = room.calculate_scores_for_question()
-    
+
     await broadcast_to_room(room_id, {
         "type": "question_results",
         "correct_answer": results["correct_answer"],
         "scores": results["scores"],
         "rankings": [(uid, uname, ts.isoformat()) for uid, uname, ts in results["rankings"][:3]]
     })
-    
+
     room.current_question_index += 1
-    
+
     # Wait 3 seconds before next question
     await asyncio.sleep(3)
     await start_question(room_id)
