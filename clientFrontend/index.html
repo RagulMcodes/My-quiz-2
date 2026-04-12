@@ -17,6 +17,8 @@
     --muted: #6060a0;
     --correct: #40f080;
     --wrong: #f04060;
+
+    --lb-width: 240px;   /* leaderboard panel width */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -81,10 +83,7 @@
   }
   .dot.live { background: var(--correct); box-shadow: 0 0 8px var(--correct); animation: pulse 1.5s infinite; }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
   #app {
     width: 100%;
@@ -111,139 +110,56 @@
     margin-bottom: 16px;
   }
 
-  h1 {
-    font-size: 2.2rem;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    margin-bottom: 8px;
-  }
+  h1 { font-size: 2.2rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em; margin-bottom: 8px; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 24px; letter-spacing: 0.04em; text-transform: uppercase; }
 
-  h2 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 24px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .subtitle {
-    color: var(--muted);
-    font-size: 0.9rem;
-    margin-bottom: 32px;
-    line-height: 1.5;
-  }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 32px; line-height: 1.5; }
 
   /* ── Buttons ── */
   .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 12px 24px;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    background: transparent;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.15s;
-    width: 100%;
-    margin-top: 12px;
+    border: 1px solid var(--border); border-radius: 3px;
+    background: transparent; color: var(--text);
+    font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.15s; width: 100%; margin-top: 12px;
   }
-
   .btn:hover { border-color: var(--text); background: rgba(255,255,255,0.04); }
-
-  .btn.primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #0a0a0f;
-  }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #0a0a0f; }
   .btn.primary:hover { background: #f8ec60; border-color: #f8ec60; }
-
-  .btn.secondary {
-    border-color: var(--accent2);
-    color: var(--accent2);
-  }
+  .btn.secondary { border-color: var(--accent2); color: var(--accent2); }
   .btn.secondary:hover { background: rgba(64,224,240,0.08); }
 
   /* ── Inputs ── */
   .field { margin-bottom: 20px; }
 
   label {
-    display: block;
-    font-family: 'Syne Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
+    display: block; font-family: 'Syne Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px;
   }
 
   input, select {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 10px 14px;
-    color: var(--text);
-    font-family: 'Syne Mono', monospace;
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.15s;
-    appearance: none;
+    width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 3px;
+    padding: 10px 14px; color: var(--text);
+    font-family: 'Syne Mono', monospace; font-size: 0.95rem;
+    outline: none; transition: border-color 0.15s; appearance: none;
   }
-
   input:focus, select:focus { border-color: var(--accent); }
   select option { background: var(--surface); }
+  input[type=range] { padding: 0; border: none; background: transparent; cursor: pointer; accent-color: var(--accent); }
 
-  input[type=range] {
-    padding: 0;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    accent-color: var(--accent);
-  }
+  .range-row { display: flex; align-items: center; gap: 16px; }
+  .range-val { font-family: 'Syne Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--accent); min-width: 32px; text-align: right; }
 
-  .range-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .range-val {
-    font-family: 'Syne Mono', monospace;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--accent);
-    min-width: 32px;
-    text-align: right;
-  }
-
-  /* ── Choice buttons (home screen) ── */
-  .choice-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 8px;
-  }
-
+  /* ── Choice buttons ── */
+  .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
   .choice-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 28px 20px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: left;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+    padding: 28px 20px; cursor: pointer; transition: all 0.15s; text-align: left;
+    color: var(--text); font-family: 'Syne', sans-serif;
   }
-
   .choice-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
   .choice-btn .icon { font-size: 1.8rem; margin-bottom: 12px; }
   .choice-btn .label { font-weight: 700; font-size: 1rem; }
@@ -251,240 +167,235 @@
 
   /* ── Lobby ── */
   .room-id-display {
-    font-family: 'Syne Mono', monospace;
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: 0.3em;
-    color: var(--accent);
-    padding: 20px;
-    text-align: center;
-    border: 1px dashed var(--accent);
-    border-radius: 4px;
-    margin-bottom: 24px;
-    cursor: pointer;
-    transition: background 0.15s;
+    font-family: 'Syne Mono', monospace; font-size: 2.5rem; font-weight: 700;
+    letter-spacing: 0.3em; color: var(--accent);
+    padding: 20px; text-align: center;
+    border: 1px dashed var(--accent); border-radius: 4px;
+    margin-bottom: 24px; cursor: pointer; transition: background 0.15s;
   }
-
   .room-id-display:hover { background: rgba(240,224,64,0.06); }
   .room-id-display small { display: block; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); margin-top: 6px; }
 
-  .player-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-  }
-
+  .player-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
   .player-tag {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    padding: 4px 14px;
-    font-size: 0.82rem;
-    font-family: 'Syne Mono', monospace;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 99px;
+    padding: 4px 14px; font-size: 0.82rem; font-family: 'Syne Mono', monospace;
     animation: fadeUp 0.3s ease;
   }
-
   .player-tag.me { border-color: var(--accent2); color: var(--accent2); }
 
-  .progress-bar-wrap {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    height: 6px;
-    margin-bottom: 20px;
-    overflow: hidden;
-  }
+  .progress-bar-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: 99px; height: 6px; margin-bottom: 20px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; }
 
-  .progress-bar {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 99px;
-    transition: width 0.4s ease;
-  }
-
-  .meta-row {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-
-  .meta-chip {
-    font-family: 'Syne Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    padding: 4px 12px;
-    border-radius: 99px;
-  }
-
+  .meta-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .meta-chip { font-family: 'Syne Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; color: var(--muted); background: var(--bg); border: 1px solid var(--border); padding: 4px 12px; border-radius: 99px; }
   .meta-chip span { color: var(--text); }
 
   /* ── Question ── */
-  .q-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-  }
-
-  .q-counter {
-    font-family: 'Syne Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-
-  .timer {
-    font-family: 'Syne Mono', monospace;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--accent);
-    transition: color 0.3s;
-  }
-
+  .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .q-counter { font-family: 'Syne Mono', monospace; font-size: 0.8rem; color: var(--muted); }
+  .timer { font-family: 'Syne Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--accent); transition: color 0.3s; }
   .timer.urgent { color: var(--wrong); animation: shake 0.3s infinite; }
 
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-2px); }
-    75% { transform: translateX(2px); }
-  }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
 
-  .question-text {
-    font-size: 1.3rem;
-    font-weight: 700;
-    line-height: 1.4;
-    margin-bottom: 28px;
-  }
+  .question-text { font-size: 1.3rem; font-weight: 700; line-height: 1.4; margin-bottom: 28px; }
 
-  .options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .option-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: left;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+    padding: 16px; cursor: pointer; transition: all 0.15s; text-align: left;
+    color: var(--text); font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 600;
+    display: flex; gap: 12px; align-items: flex-start;
   }
-
   .option-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(240,224,64,0.06); transform: translateY(-1px); }
   .option-btn:disabled { cursor: default; }
-
   .option-btn .key {
-    font-family: 'Syne Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--muted);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    padding: 2px 7px;
-    border-radius: 3px;
-    flex-shrink: 0;
-    margin-top: 1px;
+    font-family: 'Syne Mono', monospace; font-size: 0.75rem; font-weight: 700;
+    color: var(--muted); background: var(--bg); border: 1px solid var(--border);
+    padding: 2px 7px; border-radius: 3px; flex-shrink: 0; margin-top: 1px;
   }
-
   .option-btn.selected { border-color: var(--accent2); background: rgba(64,224,240,0.08); }
   .option-btn.correct  { border-color: var(--correct); background: rgba(64,240,128,0.1); }
   .option-btn.wrong    { border-color: var(--wrong); background: rgba(240,64,96,0.1); }
 
   /* ── Scores ── */
-  .score-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-    animation: fadeUp 0.3s ease;
-  }
-
+  .score-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); animation: fadeUp 0.3s ease; }
   .score-row:last-child { border-bottom: none; }
-
   .rank { font-family: 'Syne Mono', monospace; font-size: 0.8rem; color: var(--muted); width: 24px; }
   .score-name { flex: 1; font-weight: 700; }
-  .score-pts {
+  .score-pts { font-family: 'Syne Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--accent); }
+
+  /* ─────────────────────────────────────────────
+     LIVE LEADERBOARD SIDEBAR
+  ───────────────────────────────────────────── */
+  #leaderboardPanel {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%) translateX(100%);  /* hidden off-screen */
+    width: var(--lb-width);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    z-index: 200;
+    transition: transform 0.45s cubic-bezier(0.34, 1.26, 0.64, 1);
+    overflow: hidden;
+  }
+
+  #leaderboardPanel.visible {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .lb-header {
+    padding: 12px 16px;
+    background: rgba(240,224,64,0.07);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .lb-title {
     font-family: 'Syne Mono', monospace;
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     color: var(--accent);
   }
 
-  /* ── Toast / Log ── */
-  #log {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
+  .lb-badge {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--correct);
+    background: rgba(64,240,128,0.12);
+    border: 1px solid rgba(64,240,128,0.3);
+    border-radius: 99px;
+    padding: 2px 8px;
+    animation: pulse 2s infinite;
+  }
+
+  #lbList {
+    list-style: none;
+    padding: 8px 0;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .lb-row {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    z-index: 100;
-    max-width: 320px;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    border-bottom: 1px solid rgba(42,42,64,0.6);
+    transition: background 0.2s;
+    animation: lbSlide 0.35s ease;
+  }
+
+  .lb-row:last-child { border-bottom: none; }
+
+  .lb-row.me { background: rgba(64,224,240,0.06); }
+
+  .lb-row.rank-1 .lb-pos { color: #ffd700; }
+  .lb-row.rank-2 .lb-pos { color: #c0c0c0; }
+  .lb-row.rank-3 .lb-pos { color: #cd7f32; }
+
+  @keyframes lbSlide {
+    from { opacity: 0; transform: translateX(12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .lb-pos {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--muted);
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .lb-name {
+    flex: 1;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lb-score {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* score-change flash */
+  .lb-score.bumped {
+    animation: scoreBump 0.5s ease;
+  }
+
+  @keyframes scoreBump {
+    0%   { color: var(--correct); transform: scale(1.3); }
+    60%  { transform: scale(1.05); }
+    100% { color: var(--accent); transform: scale(1); }
+  }
+
+  /* tab toggle (mobile) */
+  #lbToggle {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    padding: 14px 6px;
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    cursor: pointer;
+    z-index: 199;
+    display: none;     /* shown only on mobile */
+    transition: background 0.15s;
+  }
+
+  #lbToggle:hover { background: rgba(240,224,64,0.08); }
+
+  /* ── Toast ── */
+  #log {
+    position: fixed; bottom: 24px; right: 24px;
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 100; max-width: 320px;
   }
 
   .toast {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: 3px;
-    padding: 10px 16px;
-    font-size: 0.82rem;
-    animation: slideIn 0.25s ease;
-    transition: opacity 0.3s;
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 3px;
+    padding: 10px 16px; font-size: 0.82rem;
+    animation: slideIn 0.25s ease; transition: opacity 0.3s;
   }
-
   .toast.info { border-left-color: var(--accent2); }
   .toast.error { border-left-color: var(--wrong); }
   .toast.success { border-left-color: var(--correct); }
 
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateX(20px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
   /* ── Generating overlay ── */
-  .generating {
-    text-align: center;
-    padding: 40px 20px;
-  }
-
-  .spinner {
-    width: 48px; height: 48px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 20px;
-  }
-
+  .generating { text-align: center; padding: 40px 20px; }
+  .spinner { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
   .generating p { color: var(--muted); font-size: 0.9rem; }
 
-  /* ── Results banner ── */
-  .result-banner {
-    padding: 16px 20px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.04em;
-  }
-
+  /* ── Result banner ── */
+  .result-banner { padding: 16px 20px; border-radius: 4px; margin-bottom: 20px; font-weight: 700; font-size: 1rem; letter-spacing: 0.04em; }
   .result-banner.correct { background: rgba(64,240,128,0.1); border: 1px solid var(--correct); color: var(--correct); }
   .result-banner.wrong   { background: rgba(240,64,96,0.1); border: 1px solid var(--wrong); color: var(--wrong); }
 
@@ -492,21 +403,10 @@
   .fastest-list li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
   .fastest-list li:last-child { border: none; }
 
-  /* ── Final screen ── */
+  /* ── Final ── */
   .podium { display: flex; align-items: flex-end; justify-content: center; gap: 12px; margin: 32px 0; }
   .podium-slot { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .podium-bar {
-    width: 80px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 3px 3px 0 0;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 12px;
-    font-family: 'Syne Mono', monospace;
-    font-size: 1.5rem;
-  }
+  .podium-bar { width: 80px; background: var(--surface); border: 1px solid var(--border); border-radius: 3px 3px 0 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 12px; font-family: 'Syne Mono', monospace; font-size: 1.5rem; }
   .podium-name { font-size: 0.78rem; font-weight: 700; text-align: center; max-width: 80px; word-break: break-word; }
   .podium-pts { font-family: 'Syne Mono', monospace; font-size: 0.72rem; color: var(--muted); }
 
@@ -516,6 +416,25 @@
   .final-rank { font-family: 'Syne Mono', monospace; font-size: 0.8rem; color: var(--muted); width: 28px; }
   .final-name { flex: 1; font-weight: 700; }
   .final-pts  { font-family: 'Syne Mono', monospace; font-size: 0.9rem; color: var(--accent); }
+
+  /* ── Responsive ── */
+  @media (max-width: 780px) {
+    #leaderboardPanel {
+      top: auto;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      transform: translateY(100%);
+      width: 100%;
+      border-radius: 12px 12px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      max-height: 55vh;
+    }
+    #leaderboardPanel.visible { transform: translateY(0); }
+    #lbToggle { display: flex; }
+    #lbList { max-height: 40vh; }
+  }
 
   @media (max-width: 480px) {
     .options-grid { grid-template-columns: 1fr; }
@@ -567,14 +486,16 @@
       <div class="field">
         <label>Players — <span id="playersVal">4</span></label>
         <div class="range-row">
-          <input type="range" id="playersRange" min="2" max="10" value="4" oninput="document.getElementById('playersVal').textContent=this.value" />
+          <input type="range" id="playersRange" min="2" max="10" value="4"
+            oninput="document.getElementById('playersVal').textContent=this.value;document.getElementById('playersValB').textContent=this.value" />
           <div class="range-val" id="playersValB">4</div>
         </div>
       </div>
       <div class="field">
         <label>Questions — <span id="questionsVal">10</span></label>
         <div class="range-row">
-          <input type="range" id="questionsRange" min="5" max="20" value="10" oninput="document.getElementById('questionsVal').textContent=this.value;document.getElementById('questionsValB').textContent=this.value" />
+          <input type="range" id="questionsRange" min="5" max="20" value="10"
+            oninput="document.getElementById('questionsVal').textContent=this.value;document.getElementById('questionsValB').textContent=this.value" />
           <div class="range-val" id="questionsValB">10</div>
         </div>
       </div>
@@ -680,7 +601,20 @@
     </div>
   </div>
 
-</div>
+</div><!-- /#app -->
+
+
+<!-- ─── LIVE LEADERBOARD PANEL ─── -->
+<aside id="leaderboardPanel" aria-label="Live Leaderboard">
+  <div class="lb-header">
+    <span class="lb-title">⚡ Leaderboard</span>
+    <span class="lb-badge">LIVE</span>
+  </div>
+  <ul id="lbList"></ul>
+</aside>
+
+<!-- Mobile toggle tab -->
+<button id="lbToggle" onclick="toggleLeaderboard()" aria-label="Toggle leaderboard">🏆 SCORES</button>
 
 <div id="log"></div>
 
@@ -693,18 +627,35 @@ let myAnswer = null;
 let timerInterval = null;
 let timerSeconds = 0;
 
-// Map server user_id -> username (best-effort, learned from rankings payloads)
-const nameByUserId = new Map();
+// Snapshot of previous scores for bump-animation comparison
+let prevScores = {};
 
-function displayNameForUserId(userId) {
-  if (!userId) return '';
-  return nameByUserId.get(userId) || `Player ${String(userId).slice(0, 6)}`;
-}
+// Which screens show the leaderboard sidebar automatically
+const LB_SCREENS = new Set(['screenQuestion', 'screenResults']);
 
 // ── Routing ──
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+
+  // Auto-show / hide leaderboard panel
+  const panel = document.getElementById('leaderboardPanel');
+  const toggle = document.getElementById('lbToggle');
+  if (LB_SCREENS.has(id)) {
+    panel.classList.add('visible');
+    toggle.style.display = 'none';  // hide tab when panel is shown
+  } else {
+    panel.classList.remove('visible');
+    // Show toggle tab on mobile if game is active (leaderboard has data)
+    if (document.getElementById('lbList').children.length > 0) {
+      // keep hidden outside game screens
+    }
+  }
+}
+
+function toggleLeaderboard() {
+  const panel = document.getElementById('leaderboardPanel');
+  panel.classList.toggle('visible');
 }
 
 function showCreate() { showScreen('screenCreate'); }
@@ -715,30 +666,13 @@ document.getElementById('topicSelect').addEventListener('change', function() {
   document.getElementById('customTopicField').style.display = this.value === 'custom' ? 'block' : 'none';
 });
 
-// Sync both range displays
-document.getElementById('playersRange').addEventListener('input', function() {
-  document.getElementById('playersValB').textContent = this.value;
-});
-
 // ── WebSocket ──
 function connect(callback) {
   ws = new WebSocket("wss://my-quiz-2-mcg1.onrender.com");
 
-  ws.addEventListener('open', () => {
-    setConn(true);
-    callback();
-  });
-
-  ws.addEventListener('close', () => {
-    setConn(false);
-    toast('Connection lost', 'error');
-  });
-
-  ws.addEventListener('error', () => {
-    setConn(false);
-    toast('Could not connect to server', 'error');
-  });
-
+  ws.addEventListener('open', () => { setConn(true); callback(); });
+  ws.addEventListener('close', () => { setConn(false); toast('Connection lost', 'error'); });
+  ws.addEventListener('error', () => { setConn(false); toast('Could not connect to server', 'error'); });
   ws.addEventListener('message', (e) => {
     let msg;
     try { msg = JSON.parse(e.data); } catch { return; }
@@ -779,9 +713,7 @@ function joinRoom() {
   if (!rid) { toast('Enter a room ID', 'error'); return; }
 
   username = uname;
-  connect(() => {
-    send({ action: 'join_room', username, room_id: rid });
-  });
+  connect(() => { send({ action: 'join_room', username, room_id: rid }); });
 }
 
 function copyRoomId() {
@@ -793,11 +725,51 @@ function submitAnswer(answer) {
   if (myAnswer) return;
   myAnswer = answer;
   send({ action: 'submit_answer', room_id: roomId, answer });
-
-  // Highlight selected
   document.querySelectorAll('.option-btn').forEach(btn => {
     btn.disabled = true;
     if (btn.dataset.key === answer) btn.classList.add('selected');
+  });
+}
+
+// ─────────────────────────────────────────────
+//  LIVE LEADERBOARD RENDERER
+//  Expects: leaderboard = [{rank, username, score}, ...]
+//  (sorted descending by score, already done in backend)
+// ─────────────────────────────────────────────
+function renderLeaderboard(leaderboard) {
+  if (!leaderboard || !leaderboard.length) return;
+
+  const list = document.getElementById('lbList');
+  const medals = ['🥇', '🥈', '🥉'];
+
+  // Animate rows in place by comparing with previous scores
+  list.innerHTML = '';
+  leaderboard.forEach((entry, i) => {
+    const isMe = entry.username === username;
+    const scoreChanged = prevScores[entry.username] !== undefined &&
+                         prevScores[entry.username] !== entry.score;
+
+    const li = document.createElement('li');
+    li.className = `lb-row rank-${entry.rank}` + (isMe ? ' me' : '');
+
+    const posEl = document.createElement('span');
+    posEl.className = 'lb-pos';
+    posEl.textContent = medals[i] || `#${entry.rank}`;
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'lb-name';
+    nameEl.textContent = isMe ? `${entry.username} ✦` : entry.username;
+
+    const scoreEl = document.createElement('span');
+    scoreEl.className = 'lb-score' + (scoreChanged ? ' bumped' : '');
+    scoreEl.textContent = entry.score;
+
+    li.appendChild(posEl);
+    li.appendChild(nameEl);
+    li.appendChild(scoreEl);
+    list.appendChild(li);
+
+    prevScores[entry.username] = entry.score;
   });
 }
 
@@ -849,10 +821,13 @@ function handleMessage(msg) {
       break;
 
     case 'question_results':
+      // Update leaderboard first so it's fresh when results screen appears
+      if (msg.leaderboard) renderLeaderboard(msg.leaderboard);
       showQuestionResults(msg);
       break;
 
     case 'game_ended':
+      if (msg.leaderboard) renderLeaderboard(msg.leaderboard);
       showFinal(msg);
       break;
 
@@ -884,7 +859,6 @@ function updateLobbyPlayers(list, current, max) {
 
 function addPlayerTag(name, isMe) {
   const container = document.getElementById('lobbyPlayers');
-  // avoid duplicates
   if ([...container.querySelectorAll('.player-tag')].some(el => el.textContent.replace('(you)','').trim() === name)) return;
   const tag = document.createElement('div');
   tag.className = 'player-tag' + (isMe ? ' me' : '');
@@ -916,7 +890,6 @@ function showQuestion(data) {
     grid.appendChild(btn);
   });
 
-  // Keyboard shortcut
   const handler = (e) => {
     if (['a','b','c','d'].includes(e.key.toLowerCase())) {
       submitAnswer(e.key.toUpperCase());
@@ -925,7 +898,6 @@ function showQuestion(data) {
   };
   document.addEventListener('keydown', handler);
 
-  // Timer
   startTimer(data.time_limit);
 }
 
@@ -939,13 +911,9 @@ function startTimer(seconds) {
     timerEl.textContent = timerSeconds + 's';
     timerEl.className = 'timer' + (timerSeconds <= 5 ? ' urgent' : '');
     progressEl.style.width = ((timerSeconds / seconds) * 100) + '%';
-    if (timerSeconds <= 0) {
-      clearInterval(timerInterval);
-      timerEl.textContent = '0s';
-    }
+    if (timerSeconds <= 0) { clearInterval(timerInterval); timerEl.textContent = '0s'; }
     timerSeconds--;
   }
-
   tick();
   timerInterval = setInterval(tick, 1000);
 }
@@ -955,7 +923,6 @@ function showQuestionResults(msg) {
   clearInterval(timerInterval);
   showScreen('screenResults');
 
-  // Did I get it right?
   const banner = document.getElementById('resultBanner');
   const correctKey = msg.correct_answer.charAt(0);
   if (myAnswer) {
@@ -969,7 +936,7 @@ function showQuestionResults(msg) {
     banner.textContent = `Time's up! Correct: ${msg.correct_answer}`;
   }
 
-  // Fastest
+  // Fastest correct
   const fastestSection = document.getElementById('fastestSection');
   const fastestList = document.getElementById('fastestList');
   fastestList.innerHTML = '';
@@ -977,10 +944,7 @@ function showQuestionResults(msg) {
     fastestSection.style.display = 'block';
     const medals = ['🥇','🥈','🥉'];
     const pts = [3,2,1];
-
     msg.rankings.forEach(([uid, uname], i) => {
-      if (uid && uname) nameByUserId.set(uid, uname);
-
       const li = document.createElement('li');
       li.innerHTML = `<span>${medals[i] || ''}</span> <span style="flex:1">${uname}</span> <span style="color:var(--accent);font-family:'Syne Mono',monospace">+${pts[i]||1} pts</span>`;
       fastestList.appendChild(li);
@@ -989,10 +953,9 @@ function showQuestionResults(msg) {
     fastestSection.style.display = 'none';
   }
 
-  // Scores
-  renderScores(msg.scores, 'resultScores');
+  // Inline scores (fallback / secondary view)
+  renderInlineScores(msg.leaderboard || [], 'resultScores');
 
-  // Countdown
   let t = 3;
   const cdEl = document.getElementById('nextCountdown');
   cdEl.textContent = `Next question in ${t}…`;
@@ -1003,28 +966,30 @@ function showQuestionResults(msg) {
   }, 1000);
 }
 
-function renderScores(scores, containerId) {
+// Inline score list used on the results card (uses leaderboard data)
+function renderInlineScores(leaderboard, containerId) {
   const el = document.getElementById(containerId);
   el.innerHTML = '';
-  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
-  sorted.forEach(([uid, score], i) => {
+  const medals = ['🥇','🥈','🥉'];
+  leaderboard.forEach((entry, i) => {
     const row = document.createElement('div');
     row.className = 'score-row';
-    const medals = ['🥇','🥈','🥉'];
-    row.innerHTML = `<span class="rank">${medals[i] || (i+1)}</span><span class="score-name">${displayNameForUserId(uid)}</span><span class="score-pts">${score}</span>`;
+    row.innerHTML = `<span class="rank">${medals[i] || (i+1)}</span><span class="score-name">${entry.username}</span><span class="score-pts">${entry.score}</span>`;
     el.appendChild(row);
   });
 }
 
 // ── Final ──
 function showFinal(msg) {
+  // Hide leaderboard sidebar on final screen (full results shown inline)
+  document.getElementById('leaderboardPanel').classList.remove('visible');
   showScreen('screenFinal');
 
   const scores = msg.final_scores; // [[name, pts], ...]
   const podium = document.getElementById('podium');
   podium.innerHTML = '';
 
-  const order = [1, 0, 2]; // silver, gold, bronze display order
+  const order = [1, 0, 2];
   const heights = [80, 120, 60];
   const medals = ['🥇','🥈','🥉'];
   const labels = ['1st','2nd','3rd'];
@@ -1061,10 +1026,7 @@ function toast(text, type = '') {
   el.className = `toast ${type}`;
   el.textContent = text;
   log.appendChild(el);
-  setTimeout(() => {
-    el.style.opacity = '0';
-    setTimeout(() => el.remove(), 300);
-  }, 3200);
+  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 3200);
 }
 </script>
 </body>
