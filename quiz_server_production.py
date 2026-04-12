@@ -313,11 +313,19 @@ async def handle_join_room(websocket, data, user_id):
     }, exclude_user=user_id)
 
     if room.is_full():
-        await generate_questions_for_room(room_id)
-        await asyncio.sleep(2)
-        await start_game_countdown(room_id)
+        # Run game loop as an independent task so this client's websocket
+        # stays free to receive messages (submit_answer) during the game.
+        asyncio.create_task(start_game_loop(room_id))
 
     return room_id
+
+
+async def start_game_loop(room_id: str):
+    """Generates questions then kicks off the countdown.
+    Runs as a detached task so no client websocket is blocked."""
+    await generate_questions_for_room(room_id)
+    await asyncio.sleep(2)
+    await start_game_countdown(room_id)
 
 
 async def start_game_countdown(room_id: str):
