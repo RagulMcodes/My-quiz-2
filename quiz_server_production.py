@@ -13,6 +13,29 @@ from langchain_core.output_parsers import JsonOutputParser
 
 load_dotenv()
 
+# #region agent log
+_DEBUG_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "debug-98b8e1.log")
+
+
+def _agent_dbg(hypothesis_id: str, location: str, message: str, data: dict = None):
+    import time
+    try:
+        payload = {
+            "sessionId": "98b8e1",
+            "timestamp": int(time.time() * 1000),
+            "hypothesisId": hypothesis_id,
+            "location": location,
+            "message": message,
+            "data": data or {},
+        }
+        with open(_DEBUG_LOG_PATH, "a", encoding="utf-8") as _df:
+            _df.write(json.dumps(payload, default=str) + "\n")
+    except Exception:
+        pass
+
+
+# #endregion
+
 # Initialize LLM
 llm = ChatGroq(
     model_name="llama-3.3-70b-versatile",
@@ -204,15 +227,48 @@ class QuizRoom:
 
 async def broadcast_to_room(room_id: str, message: dict, exclude_user: str = None):
     room = rooms[room_id]
+    # #region agent log
+    _agent_dbg(
+        "H1",
+        "broadcast_to_room:entry",
+        "broadcast",
+        {
+            "room_id": room_id,
+            "msg_type": message.get("type"),
+            "participant_ids": list(room.participants.keys()),
+            "in_connections": [uid for uid in room.participants if uid in connections],
+            "exclude_user": exclude_user,
+        },
+    )
+    # #endregion
     disconnected = []
+    sent = 0
+    skipped_not_connected = 0
     for user_id in room.participants.keys():
         if user_id == exclude_user:
             continue
         if user_id in connections:
             try:
                 await connections[user_id].send(json.dumps(message))
+                sent += 1
             except websockets.exceptions.ConnectionClosed:
                 disconnected.append(user_id)
+        else:
+            skipped_not_connected += 1
+    # #region agent log
+    _agent_dbg(
+        "H1",
+        "broadcast_to_room:exit",
+        "broadcast_done",
+        {
+            "room_id": room_id,
+            "msg_type": message.get("type"),
+            "sent": sent,
+            "skipped_not_connected": skipped_not_connected,
+            "disconnected": disconnected,
+        },
+    )
+    # #endregion
     for user_id in disconnected:
         if user_id in connections:
             del connections[user_id]
@@ -313,6 +369,19 @@ async def handle_join_room(websocket, data, user_id):
     }, exclude_user=user_id)
 
     if room.is_full():
+        # #region agent log
+        _agent_dbg(
+            "H4",
+            "handle_join_room:full",
+            "room_full_starting_game_loop",
+            {
+                "room_id": room_id,
+                "n_participants": len(room.participants),
+                "max_participants": room.max_participants,
+                "state": room.state,
+            },
+        )
+        # #endregion
         # Run game loop as an independent task so this client's websocket
         # stays free to receive messages (submit_answer) during the game.
         asyncio.create_task(start_game_loop(room_id))
@@ -369,6 +438,20 @@ async def start_question(room_id: str):
     await asyncio.sleep(5)
 
     results = room.calculate_scores_for_question()
+    # #region agent log
+    _agent_dbg(
+        "H3",
+        "start_question:after_scores",
+        "question_results_payload",
+        {
+            "room_id": room_id,
+            "q_index": room.current_question_index,
+            "leaderboard_len": len(results.get("leaderboard") or []),
+            "answers_received": len(room.answers_received),
+            "scores": dict(room.scores),
+        },
+    )
+    # #endregion
 
     await broadcast_to_room(room_id, {
         "type": "question_results",
@@ -410,14 +493,37 @@ async def handle_answer(websocket, data, user_id):
     answer = data.get("answer")
 
     if room_id not in rooms:
+        # #region agent log
+        _agent_dbg("H2", "handle_answer:no_room", "reject", {"user_id": user_id[:8], "room_id": room_id})
+        # #endregion
         return
 
     room = rooms[room_id]
     if room.state != "playing":
+        # #region agent log
+        _agent_dbg(
+            "H2",
+            "handle_answer:wrong_state",
+            "reject",
+            {"user_id": user_id[:8], "room_id": room_id, "state": room.state},
+        )
+        # #endregion
         return
 
     if room.record_answer(user_id, answer):
+        # #region agent log
+        _agent_dbg(
+            "H2",
+            "handle_answer:accepted",
+            "ok",
+            {"user_id": user_id[:8], "room_id": room_id, "answer": (answer or "")[:1]},
+        )
+        # #endregion
         await websocket.send(json.dumps({"type": "answer_recorded", "message": "Answer recorded!"}))
+    else:
+        # #region agent log
+        _agent_dbg("H2", "handle_answer:duplicate", "reject_dup", {"user_id": user_id[:8], "room_id": room_id})
+        # #endregion
 
 
 async def handle_client(websocket, path):
